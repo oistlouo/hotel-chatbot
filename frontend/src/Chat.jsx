@@ -43,7 +43,7 @@ What would you like to explore first? 😊`
     setLoading(true);
 
     try {
-      const res = await axios.post('http://localhost:4000/chat', { message: input });
+      const res = await axios.post('https://hotel-chatbot-9get.onrender.com/chat', { message: input });
       const reply = res.data.reply;
       setMessages([...newMessages, { role: 'bot', text: reply }]);
     } catch {
