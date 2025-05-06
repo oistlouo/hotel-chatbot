@@ -21,8 +21,16 @@ What would you like to explore first? 😊`
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
-
   const chatEndRef = useRef(null);
+
+  const faqItems = [
+    "What time is check-in and check-out?",
+    "Do you offer airport pickup?",
+    "Where can I get breakfast?",
+    "Is laundry service available?",
+    "How do I connect to Wi-Fi?",
+    "Can I request late checkout?"
+  ];
 
   const scrollToBottom = () => {
     if (chatEndRef.current) {
@@ -34,16 +42,19 @@ What would you like to explore first? 😊`
     scrollToBottom();
   }, [messages]);
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+  const sendMessage = async (customMessage) => {
+    const messageToSend = customMessage || input;
+    if (!messageToSend.trim()) return;
 
-    const newMessages = [...messages, { role: 'user', text: input }];
+    const newMessages = [...messages, { role: 'user', text: messageToSend }];
     setMessages(newMessages);
     setInput('');
     setLoading(true);
 
     try {
-      const res = await axios.post('https://hotel-chatbot-9get.onrender.com/chat', { message: input });
+      const res = await axios.post('https://hotel-chatbot-9get.onrender.com/chat', {
+        message: messageToSend
+      });
       const reply = res.data.reply;
       setMessages([...newMessages, { role: 'bot', text: reply }]);
     } catch {
@@ -97,6 +108,19 @@ What would you like to explore first? 😊`
           <div ref={chatEndRef} />
         </div>
 
+        {/* ✅ FAQ 버튼 영역 */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {faqItems.map((item, index) => (
+            <button
+              key={index}
+              onClick={() => sendMessage(item)}
+              className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 text-sm rounded-md"
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
         <div className="flex gap-2">
           <input
             value={input}
@@ -110,7 +134,7 @@ What would you like to explore first? 😊`
             className="flex-1 px-4 py-2 rounded-md border border-gray-300 text-black"
           />
           <button
-            onClick={sendMessage}
+            onClick={() => sendMessage()}
             disabled={loading}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
